@@ -2,9 +2,9 @@ import time
 import socket
 import threading
 
-IP = '0.0.0.0'
+IP = 'localhost'
 PORT = 14666
-BUFFER_SIZE = 1
+BUFFER_SIZE = 1024
 NUM_REQ = 5
 
 
@@ -32,23 +32,23 @@ class ClientThread(threading.Thread):
 		while self.STEP <= NUM_REQ:
 			self.sync()
 		print("NTP complete, closing sockets")
-		self.csocket.send("complete!".encode())
 		self.csocket.close()
 
 
 	def sync(self):
 		recieved_message = ""
 		parts = None
+		t1 = None
 		while True:
 			data = self.csocket.recv(BUFFER_SIZE)
 			print("recieved data:", data)
 			recieved_message += data.decode()
-			if data.decode() == '!':
+			if data.decode()[len(data)-1] == '!':
 				parts = recieved_message.split(' ')
 				print(parts)
+				t1 = time.time()
 				break
-	
-		MESSAGE = "STEP "+str(self.STEP)+" "+"TIME "+ str(time.time())
+		MESSAGE = "STEP "+str(self.STEP)+" "+"T1 "+ str(t1) + " " + "T2 " + str(time.time())
 		print("sending data", MESSAGE)
 		self.csocket.send(MESSAGE.encode())
 		self.STEP += 1
