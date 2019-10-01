@@ -2,7 +2,7 @@ import time
 import socket
 import threading
 
-IP = 'localhost'
+IP = '0.0.0.0'
 PORT = 14666
 BUFFER_SIZE = 1
 NUM_REQ = 5
