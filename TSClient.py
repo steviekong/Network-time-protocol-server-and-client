@@ -6,7 +6,7 @@ IP = "0.0.0.0"
 PORT = 14666
 BUFFER_SIZE = 1024
 MESSAGE = None
-NUM_REQ = 5
+NUM_REQ = 10
 
 if len(sys.argv) is 2:
 	IP = sys.argv[1]
@@ -15,12 +15,11 @@ def main():
 	STEP = 1
 	RTT = 0
 	REMOTE_TIME = time.time()
-	offset = []
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((IP, PORT))
 	#print("Connected to server!")
 	while STEP <= NUM_REQ+1:
-		time.sleep(1)
+		time.sleep(0.01)
 		#print(STEP)
 		(REMOTE_TIME, RTT)= sync(s, STEP, REMOTE_TIME, RTT)
 		#print(REMOTE_TIME)
@@ -53,9 +52,9 @@ def sync(s, STEP, REMOTE_TIME, RTT):
 			OFFSET = ((t1 - t0) + (t2 - t3))/2
 			#print("RTT is :" + str(RTT) + " and OFFSET is " + str(OFFSET))
 			if REMOTE_TIME > t2 + OFFSET:
-				return (t3 + OFFSET, RTT)
+				return (t2 + OFFSET + RTT, RTT)
 			else:
-				return (t3 - OFFSET, RTT)
+				return (t2 - OFFSET + RTT, RTT)
 		
 	
 		return 1, 1, 1	

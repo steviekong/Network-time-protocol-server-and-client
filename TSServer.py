@@ -5,7 +5,7 @@ import threading
 IP = '0.0.0.0'
 PORT = 14666
 BUFFER_SIZE = 1024
-NUM_REQ = 5
+NUM_REQ = 10
 
 
 def main():
