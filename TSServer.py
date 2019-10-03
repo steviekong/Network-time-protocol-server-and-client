@@ -16,7 +16,7 @@ def main():
 	print("Waiting for client requests")
 
 	while True:
-		server.listen(1)
+		server.listen(100)
 		clientsock, clientAddress = server.accept()
 		newthread = ClientThread(clientAddress, clientsock, STEP = 1)
 		newthread.start()

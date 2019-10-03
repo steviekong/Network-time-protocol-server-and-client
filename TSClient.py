@@ -21,9 +21,9 @@ def main():
 	while STEP <= NUM_REQ+1:
 		time.sleep(0.01)
 		#print(STEP)
-		(REMOTE_TIME, RTT)= sync(s, STEP, REMOTE_TIME, RTT)
+			(REMOTE_TIME, RTT)= sync(s, STEP, REMOTE_TIME, RTT)
 		#print(REMOTE_TIME)
-		STEP += 1
+			STEP += 1
 	s.close()
 
 
