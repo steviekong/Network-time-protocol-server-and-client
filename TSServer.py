@@ -9,6 +9,7 @@ NUM_REQ = 10
 
 
 def main():
+	# Initialize the accept socket and listen on the given port
 	server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	server.bind((IP, PORT))
@@ -21,6 +22,7 @@ def main():
 		newthread = ClientThread(clientAddress, clientsock, STEP = 1)
 		newthread.start()
 
+#Client thread object
 class ClientThread(threading.Thread):
 	def __init__(self,clientAddress,clientsocket, STEP):
 		threading.Thread.__init__(self)
