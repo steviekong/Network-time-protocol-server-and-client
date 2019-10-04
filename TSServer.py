@@ -5,7 +5,7 @@ import threading
 IP = '0.0.0.0'
 PORT = 14666
 BUFFER_SIZE = 1024
-NUM_REQ = 10
+NUM_REQ = 8
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
 	print("Waiting for client requests")
 
 	while True:
-		server.listen(10)
+		server.listen(100)
 		clientsock, clientAddress = server.accept()
 		newthread = ClientThread(clientAddress, clientsock, STEP = 1)
 		newthread.start()
@@ -48,9 +48,9 @@ class ClientThread(threading.Thread):
 			if data.decode()[len(data)-1] == '!':
 				parts = recieved_message.split(' ')
 				print(parts)
-				t1 = time.time()
+				t2 = time.time()
 				break
-		MESSAGE = "STEP "+str(self.STEP)+" "+"T1 "+ str(t1) + " " + "T2 " + str(time.time())
+		MESSAGE = "STEP "+str(self.STEP)+" "+"T2 "+ str(t2) + " " + "T3 " + str(time.time())
 		print("sending data", MESSAGE)
 		self.csocket.send(MESSAGE.encode())
 		self.STEP += 1

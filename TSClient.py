@@ -2,38 +2,44 @@ import socket
 import time
 import sys
 
-IP = "0.0.0.0"
+IP = '0.0.0.0'
 PORT = 14666
 BUFFER_SIZE = 1024
 MESSAGE = None
-NUM_REQ = 10 # This defines the number of requests made to the NTP server
+NUM_REQ = 8 # This defines the number of requests made to the NTP server
 
 if len(sys.argv) is 2:
 	IP = sys.argv[1]
 
 def main():
 	STEP = 1
-	RTT = 0 
-	REMOTE_TIME = time.time() #Initialized as current system time. Only changes after a request is made to the NTP server 
+	offset_array = [] # Stores the list of offsets 
+	rtt_array = [] # Store the list of rtt
+
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((IP, PORT))
-	while STEP <= NUM_REQ+1: # Loop for requests 
-		time.sleep(0.01) # Sleep the thread before making another request
-		(REMOTE_TIME, RTT)= sync(s, STEP, REMOTE_TIME, RTT) # Updating REMOTE TIME and RTT
+
+	while STEP < NUM_REQ+1: # Loop for requests 
+		time.sleep(1) # Sleep the thread before making another request
+		(OFFSET, RTT)= sync(s, STEP)
+		offset_array.append(OFFSET)
+		rtt_array.append(RTT)
 		STEP += 1
 	s.close()
+	min_rtt = min(rtt_array)
+	min_offset = offset_array[rtt_array.index(min_rtt)]
+	#print(offset_array)
+	#print(rtt_array)
+	print("REMOTE_TIME " + str(int((time.time() + min_offset))) + "\n" + "LOCAL_TIME " + str(int(time.time())) + "\n" + "RTT_ESTIMATE " + str(int(min_rtt)))
+
 
 
 '''
 This function requests the time from the NTP server and returns the new REMOTE TIME and RTT to the main function
 '''
-def sync(s, STEP, REMOTE_TIME, RTT):
-	if STEP > NUM_REQ:
-		print("REMOTE_TIME " + str(int(REMOTE_TIME)) +"\nLOCAL_TIME " + str(int(time.time()))+"\nRTT_ESTIMATE "+ str(int(RTT)))
-		return 1, 1
-	else:
+def sync(s, STEP):
 		MESSAGE = "STEP "+str(STEP) +"!"
-		t0 = REMOTE_TIME
+		t1 = time.time()
 		# Sending requests to the server with the step
 		s.send(MESSAGE.encode())
 		data = None
@@ -43,21 +49,15 @@ def sync(s, STEP, REMOTE_TIME, RTT):
 				break 
 		#print("recieved data from server:", data)
 		if data is not None:
-			t3 = REMOTE_TIME + (time.time() - t0)
+			t4 = time.time()
 			#print(data, t3)
 			split = data.decode().split(' ')
-			t1 = float(split[3])
-			t2 = float(split[5])
-			RTT = (t3 - t0) - (t2 - t1)
-			OFFSET = ((t1 - t0) + (t2 - t3))/2
+			t2 = float(split[3])
+			t3 = float(split[5])
+			RTT = ((t4 - t1) - (t3 - t2))/2
+			OFFSET = ((t2 - t1) + (t3 - t4))/2
 			#print("RTT is :" + str(RTT) + " and OFFSET is " + str(OFFSET))
-			if REMOTE_TIME > t2 + OFFSET: # Check for if our time is faster or slower than the NTP server
-				return (t2 + OFFSET + RTT, RTT)
-			else:
-				return (t2 - OFFSET + RTT, RTT)
+			return (OFFSET, RTT)
 		
-	
-		return 1, 1, 1	
-
 if __name__ == "__main__":
 	main()
