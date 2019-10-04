@@ -6,7 +6,7 @@ IP = '0.0.0.0'
 PORT = 14666
 BUFFER_SIZE = 1024
 MESSAGE = None
-NUM_REQ = 100 # This defines the number of requests made to the NTP server
+NUM_REQ = 8 # This defines the number of requests made to the NTP server
 
 if len(sys.argv) is 2: # Checks for optional argument
 	IP = sys.argv[1]
@@ -26,10 +26,10 @@ def main():
 		rtt_array.append(RTT)
 		STEP += 1
 	s.close()
-	min_rtt = max(rtt_array)
+	min_rtt = min(rtt_array)
 	min_offset = offset_array[rtt_array.index(min_rtt)]
-	print(offset_array)
-	print(rtt_array)
+	#print(offset_array)
+	#print(rtt_array)
 	print("REMOTE_TIME " + str(int((time.time() + min_offset))) + "\n" + "LOCAL_TIME " + str(int(time.time())) + "\n" + "RTT_ESTIMATE " + str(int(min_rtt)))
 
 '''
