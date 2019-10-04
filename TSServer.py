@@ -5,7 +5,7 @@ import threading
 IP = '0.0.0.0'
 PORT = 14666
 BUFFER_SIZE = 1024
-NUM_REQ = 8
+NUM_REQ = 100
 
 
 def main():
@@ -29,14 +29,13 @@ class ClientThread(threading.Thread):
 		self.csocket = clientsocket
 		self.STEP = STEP
 		print ("New connection added: ", clientAddress)
-
+	#This function is the main thread function
 	def run(self):
 		while self.STEP <= NUM_REQ:
-			self.sync()
+			self.sync() #calls sync for every step
 		print("NTP complete, closing sockets")
 		self.csocket.close()
-
-
+	# Sends t2 and t3 for every client request
 	def sync(self):
 		recieved_message = ""
 		parts = None
